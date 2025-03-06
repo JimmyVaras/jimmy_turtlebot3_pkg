@@ -1,0 +1,17 @@
+<launch>
+
+  <!-- Load map -->
+  <arg name="map_file" default="$(find jimmy_simulations_pkg)/maps/turtlebot3_waffle_pi/map.yaml"/>
+  <!-- param name="use_sim_time" value="true"/-->
+
+  <!-- Map Server -->
+  <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" />
+
+  <!-- AMCL (Official) -->
+  <node pkg="amcl" type="amcl" name="amcl" output="screen">
+    <!-- param name="use_sim_time" value="true" /-->
+    <remap from="scan" to="/scan"/>
+  </node>
+
+</launch>
+
