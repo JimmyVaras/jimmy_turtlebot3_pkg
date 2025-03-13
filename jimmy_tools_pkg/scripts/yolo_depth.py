@@ -6,6 +6,7 @@ import numpy as np
 import cv2
 from sensor_msgs.msg import CompressedImage
 from visualization_msgs.msg import Marker, MarkerArray
+from vision_msgs.msg import Detection2DArray
 
 class YOLODepthNode:
     def __init__(self):
@@ -21,7 +22,7 @@ class YOLODepthNode:
 
         # Subscribers
         rospy.Subscriber("/camera/depth/image_raw", CompressedImage, self.depth_callback, queue_size=1)
-        rospy.Subscriber("/yolo_detections", MarkerArray, self.detection_callback, queue_size=1)
+        rospy.Subscriber("/detector/detections", Detection2DArray, self.detection_callback, queue_size=1)
 
         # Publisher
         self.marker_pub = rospy.Publisher("/yolo_markers", MarkerArray, queue_size=1)

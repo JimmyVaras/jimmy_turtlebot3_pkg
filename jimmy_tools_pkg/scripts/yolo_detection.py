@@ -56,11 +56,14 @@ class ObjectDetectionYOLO:
                 confidence = float(detection.conf[0].item())
                 class_id = int(detection.cls[0].item())
 
+                # Get the class name from the model's names attribute
+                class_name = self.model.names[class_id]
+
                 # Draw the bounding box
                 cv2.rectangle(overlay_image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
 
                 # Overlay the detected object's name and confidence level
-                label = f"Class {class_id}: {confidence:.2f}%"
+                label = f"{class_name}: {confidence:.2f}%"
                 cv2.putText(overlay_image, label, (x_min, y_min - 10),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
