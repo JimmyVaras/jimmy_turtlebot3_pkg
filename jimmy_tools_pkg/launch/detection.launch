@@ -1,7 +1,9 @@
 <launch>
+
     <!-- YOLO Object Detection Node -->
     <node pkg="jimmy_tools_pkg" type="yolo_detection.py" name="yolo_detection" output="screen">
         <param name="camera_topic" value="/camera/rgb/image_raw"/>
         <param name="model" value="yolov8n.pt"/>
     </node>
+
 </launch>

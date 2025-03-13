@@ -1,97 +1,96 @@
 #!/usr/bin/env python3
+
 import rospy
-import cv2
-import torch
 from sensor_msgs.msg import Image
-from visualization_msgs.msg import MarkerArray, Marker
-from cv_bridge import CvBridge
+from vision_msgs.msg import Detection2DArray, BoundingBox2D, Detection2D, ObjectHypothesisWithPose
+from cv_bridge import CvBridge, CvBridgeError
+import cv2
 from ultralytics import YOLO
-import tf.transformations as tf_trans
+from geometry_msgs.msg import Pose2D
 
-# Load YOLO model (YOLOv8 pre-trained on COCO)
-model = YOLO("yolov8n.pt")  # Load a pre-trained YOLOv8 model
-
-# Camera intrinsics (change these based on your camera calibration)
-fx = 554.0  # Focal length in pixels (example)
-fy = 554.0
-cx = 320.0  # Principal point x (center of the image)
-cy = 240.0  # Principal point y
-
-depth = 1.5  # Assume fixed depth (in meters) for now
-
-
-class YOLODetectionNode:
+class ObjectDetectionYOLO:
     def __init__(self):
-        rospy.init_node('yolo_detection', anonymous=True)
-        self.bridge = CvBridge()
+        rospy.init_node('object_detection_yolo', anonymous=True)
+
+        # Subscribe to the camera image and depth topics
         self.image_sub = rospy.Subscriber('/camera/rgb/image_raw', Image, self.image_callback)
-        self.marker_pub = rospy.Publisher('/yolo_detections', MarkerArray, queue_size=10)
+        self.depth_sub = rospy.Subscriber('/camera/depth/image_raw', Image, self.depth_callback)
+
+        # Publisher for detected objects
+        self.detection_pub = rospy.Publisher('/detector/detections', Detection2DArray, queue_size=10)
+
+        # Initialize other variables
+        self.bridge = CvBridge()
+        self.image = None
+        self.depth_image = None
+        self.model = YOLO("yolov8n.pt")
+        rospy.loginfo("YOLO Object Detection Node Initialized")
 
     def image_callback(self, msg):
         try:
-            # Convert ROS Image to OpenCV format
-            cv_image = self.bridge.imgmsg_to_cv2(msg, 'bgr8')
-        except Exception as e:
-            rospy.logerr(f"CV Bridge error: {e}")
+            # Convert the RGB image
+            self.image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
+            # Run object detection
+            self.detect_objects()
+        except CvBridgeError as e:
+            rospy.logerr(f"Error converting RGB image: {str(e)}")
+
+    def depth_callback(self, msg):
+        try:
+            self.depth_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='32FC1')
+        except CvBridgeError as e:
+            rospy.logerr(f"Error converting depth image: {str(e)}")
+
+    def detect_objects(self):
+        if self.image is None:
             return
 
-        # Run YOLO inference
-        results = model(cv_image)
-        detections = results[0].boxes.xyxy.cpu().numpy()
+        results = self.model(self.image)
+        detections_msg = Detection2DArray()
 
-        # Create MarkerArray for RViz visualization
-        marker_array = MarkerArray()
-        for i, det in enumerate(detections):
-            if len(det) == 6:
-                x_min, y_min, x_max, y_max, conf, cls = det
-            elif len(det) == 4:
-                x_min, y_min, x_max, y_max = det
-                conf, cls = 1.0, -1
+        overlay_image = self.image.copy()
 
-        marker = Marker()
-        marker.header.frame_id = "camera_link"
-        marker.header.stamp = rospy.Time.now()
-        marker.ns = "yolo"
-        marker.id = i
-        marker.type = Marker.CUBE
-        marker.action = Marker.ADD
+        for result in results:
+            for detection in result.boxes:
+                x_min, y_min, x_max, y_max = map(int, detection.xyxy[0].tolist())
+                confidence = float(detection.conf[0].item())
+                class_id = int(detection.cls[0].item())
 
-        # Compute 3D position (convert pixels to meters)
-        u = (x_min + x_max) / 2  # Pixel x-coordinate (center)
-        v = (y_min + y_max) / 2  # Pixel y-coordinate (center)
-        X = (u - cx) * depth / fx
-        Y = (v - cy) * depth / fy
-        Z = depth  # Assume fixed depth for now
+                # Draw the bounding box
+                cv2.rectangle(overlay_image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2)
 
-        marker.pose.position.x = X
-        marker.pose.position.y = Y
-        marker.pose.position.z = Z
+                # Overlay the detected object's name and confidence level
+                label = f"Class {class_id}: {confidence:.2f}%"
+                cv2.putText(overlay_image, label, (x_min, y_min - 10),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-        marker.scale.x = (x_max - x_min) * depth / fx
-        marker.scale.y = (y_max - y_min) * depth / fy
-        marker.scale.z = 0.1
+                # Create Detection2D message
+                det = Detection2D()
+                det.bbox = BoundingBox2D()
+                det.bbox.center.x = (x_min + x_max) / 2.0
+                det.bbox.center.y = (y_min + y_max) / 2
+                det.bbox.size_x = x_max - x_min
+                det.bbox.size_y = y_max - y_min
 
-        marker.color.a = 0.8
-        marker.color.r = 1.0 if cls == 0 else 0.0
-        marker.color.g = 0.0 if cls == 0 else 1.0
-        marker.color.b = 0.0
+                hypothesis = ObjectHypothesisWithPose()
+                hypothesis.id = int(class_id)
+                hypothesis.score = confidence / 100.0
+                det.results.append(hypothesis)
 
-        # ✅ Set valid quaternion (identity rotation)
-        marker.pose.orientation.x = 0.0
-        marker.pose.orientation.y = 0.0
-        marker.pose.orientation.z = 0.0
-        marker.pose.orientation.w = 1.0
+                detections_msg.detections.append(det)
 
-        marker_array.markers.append(marker)
+        # Publish detection results
+        self.detection_pub.publish(detections_msg)
 
-        # Publish markers to RViz
-        self.marker_pub.publish(marker_array)
-        rospy.loginfo("Published YOLO detections")
-
+        # Display the overlay image
+        cv2.imshow("YOLO Detections", overlay_image)
+        cv2.waitKey(1)
 
 if __name__ == '__main__':
     try:
-        YOLODetectionNode()
+        node = ObjectDetectionYOLO()
         rospy.spin()
     except rospy.ROSInterruptException:
         pass
+    finally:
+        cv2.destroyAllWindows()
