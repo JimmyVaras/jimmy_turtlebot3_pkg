@@ -52,7 +52,7 @@ class ObjectDetectionYOLO:
 
                 # Compute the center of the bounding box
                 bbox_center_x = (x_min + x_max) // 2
-                bbox_center_y = (y_min + y_max) // 2
+                bbox_center_y = (y_min + y_max) // 2 # Not used because we only have a 2D depth scan
 
                 # Append the detection data in the required JSON format
                 detections.append({
