@@ -192,7 +192,7 @@
                 </image>
                 <clip>
                     <near>0.02</near>
-                    <far>5.0</far>
+                    <far>10.0</far>
                 </clip>
                 <depth_camera>
                     <output>depth</output>
@@ -206,7 +206,7 @@
                 <pointCloudTopicName>/camera/depth/points</pointCloudTopicName>
                 <frameName>camera_rgb_optical_frame</frameName>
                 <pointCloudCutoff>0.2</pointCloudCutoff>
-                <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+                <pointCloudCutoffMax>10.0</pointCloudCutoffMax>
             </plugin>
         </sensor>
     </gazebo>

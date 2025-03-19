@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
 # --------------------
+# This v2 script is intended for the use with a model that integrates a depth camera
 # Author: Jaime Varas Cáceres
 # --------------------
 
-import rospy
 import json
-from sensor_msgs.msg import Image
-from cv_bridge import CvBridge, CvBridgeError
+
 import cv2
-from ultralytics import YOLO
+import rospy
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image
 from std_msgs.msg import String
+from ultralytics import YOLO
 
 
 class ObjectDetectionYOLO:
@@ -57,12 +59,13 @@ class ObjectDetectionYOLO:
 
                 # Compute the center of the bounding box
                 bbox_center_x = (x_min + x_max) // 2
-                bbox_center_y = (y_min + y_max) // 2 # Not used because we only have a 2D depth scan
+                bbox_center_y = (y_min + y_max) // 2
 
                 # Append the detection data in the required JSON format
                 detections.append({
                     "label": class_name,
-                    "bbox_center": bbox_center_x
+                    "bbox_center_x": bbox_center_x,
+                    "bbox_center_y": bbox_center_y
                 })
 
                 # Draw the bounding box
@@ -78,6 +81,7 @@ class ObjectDetectionYOLO:
         # Display the overlay image
         cv2.imshow("YOLO Detections", overlay_image)
         cv2.waitKey(1)
+
 
 if __name__ == '__main__':
     try:

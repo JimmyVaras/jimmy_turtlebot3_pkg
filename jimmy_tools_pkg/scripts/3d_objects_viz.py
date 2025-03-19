@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# --------------------
+# Author: Jaime Varas Cáceres
+# --------------------
+
 import rospy
 import json
 import math
