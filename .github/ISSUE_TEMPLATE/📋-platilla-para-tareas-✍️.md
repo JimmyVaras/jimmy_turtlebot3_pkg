@@ -7,6 +7,6 @@ assignees: JimmyVaras
 
 ---
 
-Modulo: Detección de objetos| Memoria + Navegación | Interfaz de control| Gestión de tareas
+⚙️ Módulo: Detección de objetos | Memoria + Navegación | Interfaz de control | Gestión de tareas
 
-Descripción:
+🗒️ Descripción:
