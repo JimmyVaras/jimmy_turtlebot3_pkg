@@ -1,7 +1,7 @@
 ---
-name: Issue template for tasks
+name: "\U0001F4CB Issue template for tasks ✍️"
 about: To be used for new tasks
-title: "[RF#] "
+title: "[RF#]"
 labels: functionality
 assignees: JimmyVaras
 
