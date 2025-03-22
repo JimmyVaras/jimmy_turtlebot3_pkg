@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # --------------------
-# This v2 script is intended for the use with a model that integrates a depth camera
+# This script is intended for the use with a model that integrates a depth camera
 # Author: Jaime Varas Cáceres
 # --------------------
 
@@ -36,13 +36,15 @@ def create_marker(marker_id, x, y, z, label):
     marker.color.g = 0.0
     marker.color.b = 0.0
 
-    marker.type = Marker.TEXT_VIEW_FACING  # Allows displaying the label text in the marker
+    marker.type = (
+        Marker.TEXT_VIEW_FACING
+    )  # Allows displaying the label text in the marker
     marker.text = label
 
     return marker
 
 
-class YOLODepthProcessor:
+class ObjectLocalizer:
     def __init__(self):
         rospy.init_node("object_localizer", anonymous=True)
 
@@ -53,7 +55,9 @@ class YOLODepthProcessor:
         rospy.Subscriber("/yolo_detections", String, self.detections_callback)
 
         # Publisher
-        self.marker_pub = rospy.Publisher("/detected_objects_markers", MarkerArray, queue_size=10)
+        self.marker_pub = rospy.Publisher(
+            "/detected_objects_markers", MarkerArray, queue_size=10
+        )
 
         rospy.spin()
 
@@ -76,7 +80,9 @@ class YOLODepthProcessor:
             point = self.get_3d_point(cx, cy)
             if point:
                 x, y, z = point
-                rospy.loginfo(f"Detected {detection['label']} at x: {x:.2f}, y: {y:.2f}, z: {z:.2f}")
+                rospy.loginfo(
+                    f"Detected {detection['label']} at x: {x:.2f}, y: {y:.2f}, z: {z:.2f}"
+                )
                 marker = create_marker(i, x, y, z, detection["label"])
                 marker_array.markers.append(marker)
 
@@ -84,7 +90,9 @@ class YOLODepthProcessor:
 
     def get_3d_point(self, u, v):
         """Extracts 3D coordinates from the PointCloud2 message at pixel (u, v)."""
-        gen = pc2.read_points(self.pointcloud, field_names=("x", "y", "z"), skip_nans=True, uvs=[[u, v]])
+        gen = pc2.read_points(
+            self.pointcloud, field_names=("x", "y", "z"), skip_nans=True, uvs=[[u, v]]
+        )
         for p in gen:
             return p  # (x, y, z)
 
@@ -93,6 +101,6 @@ class YOLODepthProcessor:
 
 if __name__ == "__main__":
     try:
-        YOLODepthProcessor()
+        ObjectLocalizer()
     except rospy.ROSInterruptException:
         pass

@@ -5,22 +5,26 @@
 # Author: Jaime Varas Cáceres
 # --------------------
 
-import rospy
 import json
+
+import rospy
 from geometry_msgs.msg import PoseStamped
+
 
 class GotoObject:
     def __init__(self):
-        self.filename = "/home/jimmy/object_positions.json"
+        self.filename = "/home/jimmy/object_positions.json"  # Path to the JSON file with object positions
         self.objects = self.load_from_file()
 
-        rospy.init_node("goto_object", anonymous=True)
-        self.goal_pub = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=10)
+        rospy.init_node("goto_objects", anonymous=True)
+        self.goal_pub = rospy.Publisher(
+            "/move_base_simple/goal", PoseStamped, queue_size=10
+        )
         rospy.loginfo("GotoObject Node Started")
 
         rospy.Timer(rospy.Duration(5), self.ask_for_object)  # Ask every 5 sec
 
-    def ask_for_object(self, event):
+    def ask_for_object(self, _):
         if not self.objects:
             rospy.loginfo("No objects available to navigate to.")
             return
@@ -53,10 +57,11 @@ class GotoObject:
 
     def load_from_file(self):
         try:
-            with open(self.filename, 'r') as f:
+            with open(self.filename, "r") as f:
                 return json.load(f)
         except FileNotFoundError:
             return {}  # Return empty dictionary if file does not exist
+
 
 if __name__ == "__main__":
     goto = GotoObject()

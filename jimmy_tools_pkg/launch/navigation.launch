@@ -1,17 +1,25 @@
 <launch>
 
+  <!-- This launch file launches the required nodes to allow the robot to localize itself in the map-->
+  <!-- a previous SLAM mapping of the map is required and should be passes as a parameter -->
+  <!-- Additionally, it launches a personalized RViz config of relevant topics and the keyboard teleop node -->
+
   <!-- Load map -->
   <arg name="map_file" default="$(find jimmy_simulations_pkg)/maps/turtlebot3_waffle_pi/map.yaml"/>
-  <!-- param name="use_sim_time" value="true"/-->
 
   <!-- Map Server -->
   <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" />
 
-  <!-- AMCL (Official) -->
+  <!-- AMCL -->
   <node pkg="amcl" type="amcl" name="amcl" output="screen">
-    <!-- param name="use_sim_time" value="true" /-->
     <remap from="scan" to="/scan"/>
   </node>
+
+  <!-- Launch RViz with custom configuration -->
+  <node pkg="rviz" type="rviz" name="rviz" args="-d /home/jimmy/catkin_ws/src/jimmy_turtlebot_pkg/jimmy_tools_pkg/config/jimmy_tb3.rviz" />
+
+  <!-- Launch turtlebot3_teleop_key node -->
+  <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch" />
 
 </launch>
 

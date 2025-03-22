@@ -1,9 +1,17 @@
 <launch>
 
+    <!-- This launch file spins up the YOLO Detection and Object Localizer nodes -->
+    <!-- The YOLO Detection node will detect objects in the camera feed -->
+    <!-- The Object Localizer node will publish the markers with the locations of
+     the detected objects in the topic /detected_objects_markers and open a window with
+     a camera feed the detected objects, their class and bounding box-->
+
     <!-- YOLO Object Detection Node -->
     <node pkg="jimmy_tools_pkg" type="yolo_detection.py" name="yolo_detection" output="screen">
-        <param name="camera_topic" value="/camera/rgb/image_raw"/>
-        <param name="model" value="yolov8n.pt"/>
+    </node>
+
+    <!-- Object Localizer Node -->
+    <node pkg="jimmy_tools_pkg" type="object_localizer.py" name="object_localizer" output="screen">
     </node>
 
 </launch>

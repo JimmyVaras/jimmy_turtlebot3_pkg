@@ -1,0 +1,20 @@
+<launch>
+
+    <!-- This launch file launches the required nodes for navigating to saved locations of detected objects -->
+
+    <!-- Include the turtlebot3_navigation.launch file -->
+    <!-- For some reason RViz wont display some topics correctly the first time you launch it, just restart it -->
+    <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch">
+        <!-- Pass the map_file parameter -->
+        <arg name="map_file" value="$(find jimmy_simulations_pkg)/maps/turtlebot3_waffle_pi/map.yaml"/>
+    </include>
+
+    <!-- Location Memory Node -->
+    <node pkg="jimmy_tools_pkg" type="objects_memory.py" name="objects_memory" output="screen">
+    </node>
+
+    <!-- Location Memory GoTo Node -->
+    <node pkg="jimmy_tools_pkg" type="goto_objects.py" name="goto_objects" output="screen">
+    </node>
+
+</launch>

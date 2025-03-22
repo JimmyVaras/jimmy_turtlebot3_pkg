@@ -2,7 +2,7 @@
 
 # --------------------
 # This file was created purely for debugging purposes during the 3d location estimation
-# It allowed the discovery of a fault in the original code of 3d_objects_viz-v2.py
+# It allowed the discovery of a fault in the original code of object_localizer.py
 # which was using the "map" tf instead of the "camera_rgb_optical_frame"
 # This file is kept for possible future use
 # Author: Jaime Varas Cáceres
@@ -11,8 +11,6 @@
 import rospy
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
-
-
 
 
 def create_marker():
