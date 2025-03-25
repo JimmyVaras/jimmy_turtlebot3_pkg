@@ -2,6 +2,7 @@ build/
 devel/
 .vscode/
 .idea/
+.cache/
 .catkin_tools/
 *.swp
 *.log

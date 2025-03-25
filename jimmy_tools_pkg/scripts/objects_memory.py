@@ -13,7 +13,7 @@ from visualization_msgs.msg import MarkerArray
 
 class ObjectMemory:
     def __init__(self):
-        self.filename = "/home/jimmy/object_positions.json.json"
+        self.filename = "/home/jimmy/object_positions.json"
         self.objects = self.load_from_file()  # Load previous data
 
         rospy.init_node("objects_memory", anonymous=True)
