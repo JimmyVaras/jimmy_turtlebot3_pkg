@@ -1,7 +1,7 @@
 <launch>
 
   <!-- This launch file launches the required nodes to allow the robot to localize itself in the map-->
-  <!-- a previous SLAM mapping of the map is required and should be passes as a parameter -->
+  <!-- a previous SLAM mapping of the map is required and should be passed as a parameter -->
   <!-- Additionally, it launches a personalized RViz config of relevant topics and the keyboard teleop node -->
 
   <!-- Load map -->

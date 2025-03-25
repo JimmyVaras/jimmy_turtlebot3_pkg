@@ -4,12 +4,17 @@
 # --------------------
 
 import json
-import rospy
-from geometry_msgs.msg import PoseStamped
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QCommandLinkButton
-from PyQt5 import uic
-import sys
+import subprocess
+import time
 
+import rospy
+import sys
+from geometry_msgs.msg import PoseStamped
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QCommandLinkButton, QCheckBox, \
+    QVBoxLayout, QWidget
+from PyQt5 import uic
+import commands
+from map_viewer import MapViewer
 
 class JimmyTurtlebot3GUI(QMainWindow):
     def __init__(self):
@@ -22,16 +27,21 @@ class JimmyTurtlebot3GUI(QMainWindow):
         self.selectButton = self.findChild(QPushButton, "selectButton")
         self.navigateButton = self.findChild(QPushButton, "navigateButton")
         self.reloadObjectsButton = self.findChild(QCommandLinkButton, "reloadObjectsButton")
-
-        # Initialize ROS Node & Publisher
-        rospy.init_node("gui_node", anonymous=True)
-        self.goal_pub = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=10)
-        rospy.loginfo("GUI Navigation Node Started")
+        self.launchSimulationButton = self.findChild(QPushButton, "launchSimulation")
+        self.GUIcheckbox = self.findChild(QCheckBox, "GUIcheckbox")
+        self.launchNavigator = self.findChild(QPushButton, "launchNavigator")
+        self.launchDetector = self.findChild(QPushButton, "launchDetector")
+        self.launchLMG = self.findChild(QPushButton, "launchLMG")
 
         # Load objects from JSON file and populate "selectorCB"
         self.selected_object = None
         self.objects = []
         self.load_objects()
+
+        # Initialize ROS Node & Publisher
+        rospy.init_node("gui_node", anonymous=True)
+        self.goal_pub = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=10)
+        rospy.loginfo("GUI Navigation Node Started")
 
         # Connect "Select" button click to show locations function
         self.selectButton.clicked.connect(self.show_locations)
@@ -41,6 +51,26 @@ class JimmyTurtlebot3GUI(QMainWindow):
 
         # Connect "ReloadObjects" button click to load objects function
         self.reloadObjectsButton.clicked.connect(self.load_objects)
+
+        # Connect launch buttons to scripts
+        self.launchSimulationButton.clicked.connect(lambda: commands.start_simulation(self.GUIcheckbox.isChecked()))
+        self.launchNavigator.clicked.connect(commands.start_navigator)
+        self.launchDetector.clicked.connect(commands.start_detector)
+        self.launchLMG.clicked.connect(commands.start_lmg)
+
+        # Crear el visor de mapas
+        self.map_viewer = MapViewer()
+
+        # Encontrar el widget donde irá el mapa
+        self.map_container = self.findChild(QWidget, "mapWidget")  # Nombre en Qt Designer
+
+        # Reemplazar el contenido de mapWidget con el visor de mapas
+        layout = QVBoxLayout(self.map_container)
+        layout.addWidget(self.map_viewer)
+
+        # Fijar layout para evitar errores
+        self.map_container.setLayout(layout)
+
 
     def load_objects(self):
         """Load object names from JSON and populate the ComboBox."""
@@ -78,6 +108,14 @@ class JimmyTurtlebot3GUI(QMainWindow):
         rospy.loginfo(f"Navigating to {selected_location}")
 
 
+def start_roscore():
+    roscore_process = subprocess.Popen(['roscore'])
+    time.sleep(1)  # Wait for roscore to initialize
+    return roscore_process
+
+
+# print("Starting roscore...")
+# roscore = start_roscore()
 app = QApplication(sys.argv)
 window = JimmyTurtlebot3GUI()
 window.show()
