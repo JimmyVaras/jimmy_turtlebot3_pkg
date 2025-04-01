@@ -1,3 +1,8 @@
+# --------------------
+# This is the Python file that contains the commands to be executed when clicking on laucnh buttons in the GUI
+# Author: Jaime Varas Cáceres
+# --------------------
+
 import subprocess
 
 def start_simulation(gui=False):

@@ -1,3 +1,8 @@
+# --------------------
+# This is the Python file that displays the /map in the GUI
+# Author: Jaime Varas Cáceres
+# --------------------
+
 import numpy as np
 import rospy
 from PyQt5.QtGui import QImage, QPixmap, QBrush, QColor
