@@ -28,8 +28,8 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y ros-noetic-rostest  # Instala el paquete rostest de ROS
-        sudo apt install -y python3-catkin-pkg python3-rospkg python3-rosdep  # Otras dependencias de ROS
-    
+        sudo apt install -y python3-catkin-pkg python3-rospkg python3-rosdep python3-rosunit  # Otras dependencias necesarias para pruebas
+        
     - name: Cache dependencies
       uses: actions/cache@v3
       with:
@@ -42,7 +42,6 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         pip install coverage
-        pip install rostest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     
     - name: Set up ROS environment
