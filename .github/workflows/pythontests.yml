@@ -30,6 +30,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+    - name: Install rostest
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-rostest
     
     - name: Run tests with coverage
       run: |
