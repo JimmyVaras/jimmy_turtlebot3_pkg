@@ -16,7 +16,14 @@ class GotoObject:
         self.filename = "/home/jimmy/object_positions.json"  # Path to the JSON file with object positions
         self.objects = self.load_from_file()
 
-        rospy.init_node("goto_objects", anonymous=True)
+        try:
+            rospy.init_node("goto_objects", anonymous=True)
+        except rospy.exceptions.ROSException as e:
+            if "has already been called" in str(e):
+                pass  # Node already initialized
+            else:
+                raise
+
         self.goal_pub = rospy.Publisher(
             "/move_base_simple/goal", PoseStamped, queue_size=10
         )

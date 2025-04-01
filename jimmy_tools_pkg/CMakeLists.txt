@@ -197,6 +197,11 @@ include_directories(
 ## Testing ##
 #############
 
+if(CATKIN_ENABLE_TESTING)
+    find_package(rostest REQUIRED)
+    catkin_add_nosetests(scripts/test_goto_objects.py)  # Alternative test command
+endif()
+
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_jimmy_turtlebot_pkg.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
