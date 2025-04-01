@@ -64,12 +64,11 @@ class JimmyTurtlebot3GUI(QMainWindow):
         # Encontrar el widget donde irá el mapa
         self.map_container = self.findChild(QWidget, "mapWidget")  # Nombre en Qt Designer
 
-        # Reemplazar el contenido de mapWidget con el visor de mapas
-        layout = QVBoxLayout(self.map_container)
-        layout.addWidget(self.map_viewer)
+        # # Reemplazar el contenido de mapWidget con el visor de mapas
+        # layout = QVBoxLayout(self.map_container)
+        # layout.addWidget(self.map_viewer)
 
-        # Fijar layout para evitar errores
-        self.map_container.setLayout(layout)
+        # DEJAMOS COMENTADO EL MAPA POR AHORA QUE NO SE VA A USAR NI DEPURAR
 
 
     def load_objects(self):
@@ -80,7 +79,6 @@ class JimmyTurtlebot3GUI(QMainWindow):
                 data = json.load(file)
                 self.objects = data  # Store for potential later use
                 object_names = list(data.keys())  # Extract object names
-                print(object_names)
                 self.objectSelector.addItems(object_names)  # Populate ComboBox
         except Exception as e:
             rospy.logerr(f"Error loading JSON file: {e}")
@@ -97,7 +95,7 @@ class JimmyTurtlebot3GUI(QMainWindow):
 
         goal = PoseStamped()
         goal.header.stamp = rospy.Time.now()
-        goal.header.frame_id = "odom"
+        goal.header.frame_id = "map"
         rospy.loginfo(selected_location)
         goal.pose.position.x = selected_location[2]
         goal.pose.position.y = -float(selected_location[0])

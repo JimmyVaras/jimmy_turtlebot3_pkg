@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>787</width>
-    <height>681</height>
+    <width>781</width>
+    <height>835</height>
    </rect>
   </property>
   <property name="font">
@@ -30,10 +30,10 @@
    <widget class="QWidget" name="mapWidget" native="true">
     <property name="geometry">
      <rect>
-      <x>120</x>
+      <x>89</x>
       <y>330</y>
-      <width>500</width>
-      <height>300</height>
+      <width>581</width>
+      <height>451</height>
      </rect>
     </property>
    </widget>
@@ -403,7 +403,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>787</width>
+     <width>781</width>
      <height>22</height>
     </rect>
    </property>
