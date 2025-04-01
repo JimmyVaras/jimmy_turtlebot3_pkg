@@ -165,6 +165,10 @@ include_directories(
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
+catkin_install_python(PROGRAMS scripts/goto_objects.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 # install(TARGETS ${PROJECT_NAME}_node
@@ -199,7 +203,7 @@ include_directories(
 
 if(CATKIN_ENABLE_TESTING)
     find_package(rostest REQUIRED)
-    catkin_add_nosetests(scripts/test_goto_objects.py)  # Alternative test command
+    catkin_add_nosetests(tests/test_goto_objects.py)  # Alternative test command
 endif()
 
 ## Add gtest based cpp test target and link libraries

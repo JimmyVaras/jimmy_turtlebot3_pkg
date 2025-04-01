@@ -16,5 +16,6 @@
     <!-- Location Memory GoTo Node -->
     <node pkg="jimmy_tools_pkg" type="goto_objects.py" name="goto_objects" output="screen">
     </node>
+    <test test-name="test_goto_objects" pkg="jimmy_tools_pkg" type="test_goto_objects.py" />    
 
 </launch>

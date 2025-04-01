@@ -4,5 +4,8 @@ devel/
 .idea/
 .cache/
 .catkin_tools/
+__pycache__/
+*.py[cod]
+*$py.class
 *.swp
 *.log

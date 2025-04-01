@@ -1,0 +1,3 @@
+<launch>
+    <test test-name="test_goto" pkg="jimmy_tools_pkg" type="test_goto_objects.py" />
+</launch>

@@ -41,15 +41,17 @@ class GotoObject:
 
         if target in self.objects:
             positions = self.objects[target]
-            if isinstance(positions[0], list):
-                position = positions[0]  # Select the first stored position
-            else:
-                position = positions  # If there's only one position, use it directly
-            self.send_goal(position)
+            self.send_goal(positions)
         else:
             rospy.loginfo("Object not found.")
 
-    def send_goal(self, position):
+    def send_goal(self, positions):
+        # We check if positions is a single location or an array
+        if isinstance(positions[0], list):
+            position = positions[0]  # Select the first stored position
+        else:
+            position = positions  # If there's only one position, use it directly
+
         goal = PoseStamped()
         goal.header.stamp = rospy.Time.now()
         goal.header.frame_id = "odom"
