@@ -42,6 +42,7 @@ jobs:
       run: |
         python3 -m pip install --upgrade pip
         pip install coverage
+        pip install rostest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     
     - name: Set up ROS environment
