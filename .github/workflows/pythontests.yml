@@ -4,11 +4,11 @@ on: [push, pull_request]
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
-    strategy:
-      matrix:
-        python-version: ["3.8"]
-    
+    runs-on: ubuntu-latest
+
+    container:
+      image: osrf/ros:noetic-desktop-full 
+
     steps:
     - uses: actions/checkout@v4
     
@@ -31,17 +31,11 @@ jobs:
         pip install coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     
-    - name: Install ROS
+    - name: Set up ROS environment
       run: |
-        sudo apt update
-        sudo apt install -y curl
-        curl -sSL 'http://repo.ros2.org/repos.key' | sudo apt-key add -
-        sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-        sudo apt update
-        sudo apt install -y ros-noetic-rostest ros-noetic-ros-base
+        source /opt/ros/noetic/setup.bash
         echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc
-        source ~/.bashrc
-    
+        
     - name: Run tests with coverage
       run: |
         source /opt/ros/noetic/setup.bash
