@@ -8,7 +8,6 @@ jobs:
 
     container:
       image: osrf/ros:noetic-desktop-full  # Usamos la imagen oficial con ROS Noetic
-      options: --gpus all  # Solo si necesitas acceder a GPUs (opcional)
 
     steps:
     - uses: actions/checkout@v4
