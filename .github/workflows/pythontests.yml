@@ -27,7 +27,7 @@ jobs:
     
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
+        python3 -m pip install --upgrade pip
         pip install coverage
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     
@@ -38,6 +38,6 @@ jobs:
         
     - name: Run tests with coverage
       run: |
-        source /opt/ros/noetic/setup.bash
-        python -m coverage run -m unittest discover
-        python -m coverage report
+        source3 /opt/ros/noetic/setup.bash
+        python3 -m coverage run -m unittest discover
+        python3 -m coverage report
