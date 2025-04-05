@@ -68,7 +68,8 @@ class ObjectDetectionYOLO:
                 bbox_center_y = (y_min + y_max) // 2
 
                 # Append the detection data in the required JSON format
-                detections.append(
+                if confidence > 0.4:
+                    detections.append(
                     {
                         "label": class_name,
                         "bbox_center_x": bbox_center_x,
@@ -80,7 +81,7 @@ class ObjectDetectionYOLO:
                 cv2.rectangle(
                     overlay_image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2
                 )
-                label = f"{class_name}: {confidence:.2f}%"
+                label = f"{class_name}: {confidence:.2f}"
                 cv2.putText(
                     overlay_image,
                     label,

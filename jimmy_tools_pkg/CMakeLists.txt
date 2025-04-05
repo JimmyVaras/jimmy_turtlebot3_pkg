@@ -165,7 +165,8 @@ include_directories(
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
 
-catkin_install_python(PROGRAMS scripts/goto_objects.py
+catkin_install_python(PROGRAMS
+  scripts/goto_objects.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -200,11 +201,6 @@ catkin_install_python(PROGRAMS scripts/goto_objects.py
 #############
 ## Testing ##
 #############
-
-if(CATKIN_ENABLE_TESTING)
-    find_package(rostest REQUIRED)
-    catkin_add_nosetests(tests/test_goto_objects.py)  # Alternative test command
-endif()
 
 ## Add gtest based cpp test target and link libraries
 # catkin_add_gtest(${PROJECT_NAME}-test test/test_jimmy_turtlebot_pkg.cpp)

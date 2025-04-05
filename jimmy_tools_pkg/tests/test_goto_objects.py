@@ -6,11 +6,10 @@ import tempfile
 import rostest
 from geometry_msgs.msg import PoseStamped
 from unittest.mock import patch, MagicMock
-import sys
 import os
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '../scripts'))
-from goto_objects import GotoObject
+from jimmy_tools_pkg.scripts.goto_objects import GotoObject
+
 
 class TestGotoObjects(unittest.TestCase):
     def setUp(self):
@@ -99,6 +98,7 @@ class TestGotoObjects(unittest.TestCase):
         goto.objects = {}
         goto.ask_for_object(None)
         mock_loginfo.assert_called_with("No objects available to navigate to.")
+
 
 if __name__ == '__main__':
     rostest.rosrun('jimmy_tools_pkg', 'test_goto_objects', TestGotoObjects)

@@ -24,7 +24,7 @@ def create_marker():
     marker = Marker()
 
     # Set the frame ID and timestamp
-    marker.header.frame_id = "camera_rgb_optical_frame"
+    marker.header.frame_id = "map"
     marker.header.stamp = rospy.Time.now()
 
     # Set the marker type to SPHERE (can change to different types such as CUBE, ARROW, etc.)
@@ -34,7 +34,7 @@ def create_marker():
     marker.action = Marker.ADD
 
     # Set the position of the marker (vase coordinates)
-    marker.pose.position = Point(0.99, -0.09, 2.01)
+    marker.pose.position = Point(2, 3, 0.1)
 
     # Set the orientation (no rotation in this case)
     marker.pose.orientation.w = 1.0

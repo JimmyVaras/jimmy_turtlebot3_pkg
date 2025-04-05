@@ -9,6 +9,8 @@ import json
 
 import rospy
 import sensor_msgs.point_cloud2 as pc2
+import tf2_ros
+from geometry_msgs.msg import PointStamped
 from sensor_msgs.msg import PointCloud2
 from std_msgs.msg import String
 from visualization_msgs.msg import Marker, MarkerArray
@@ -48,6 +50,9 @@ class ObjectLocalizer:
     def __init__(self):
         rospy.init_node("object_localizer", anonymous=True)
 
+        self.tf_buffer = tf2_ros.Buffer()
+        self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
+
         self.pointcloud = None
 
         # Subscribers
@@ -76,15 +81,31 @@ class ObjectLocalizer:
             cx = int(detection["bbox_center_x"])
             cy = int(detection["bbox_center_y"])
 
-            # Extract (x, y, z) from PointCloud2
             point = self.get_3d_point(cx, cy)
+
             if point:
                 x, y, z = point
-                rospy.loginfo(
-                    f"Detected {detection['label']} at x: {x:.2f}, y: {y:.2f}, z: {z:.2f}"
-                )
-                marker = create_marker(i, x, y, z, detection["label"])
-                marker_array.markers.append(marker)
+
+                # 1. Crea un PointStamped en el frame de la cámara
+                point_stamped = PointStamped()
+                point_stamped.header.frame_id = "camera_rgb_optical_frame"
+                point_stamped.header.stamp = rospy.Time.now()
+                point_stamped.point.x = x
+                point_stamped.point.y = y
+                point_stamped.point.z = z
+
+                try:
+                    # 2. Transforma al frame `map`
+                    transformed = self.tf_buffer.transform(point_stamped, "map", rospy.Duration(1.0))
+
+                    # 3. Crea el marcador en el frame map
+                    marker = create_marker(i, transformed.point.x, transformed.point.y, transformed.point.z,
+                                           detection["label"])
+                    marker.header.frame_id = "map"  # <-- ¡muy importante!
+                    marker_array.markers.append(marker)
+
+                except (tf2_ros.LookupException, tf2_ros.ExtrapolationException) as e:
+                    rospy.logwarn(f"TF transform failed: {e}")
 
         self.marker_pub.publish(marker_array)
 
