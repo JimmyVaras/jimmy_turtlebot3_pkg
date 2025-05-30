@@ -85,6 +85,6 @@ class MapViewer(QGraphicsView):
         self.robot_marker.setPos(map_x, map_y)
 
         # Optionally, print for debugging:
-        print(f"Robot position in world coordinates: ({x}, {y})")
-        print(f"Robot position in map coordinates: ({map_x}, {map_y})")
+        # print(f"Robot position in world coordinates: ({x}, {y})")
+        # print(f"Robot position in map coordinates: ({map_x}, {map_y})")
         self.robot_marker.setPos(map_x, map_y)

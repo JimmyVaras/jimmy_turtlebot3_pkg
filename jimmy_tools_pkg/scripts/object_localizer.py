@@ -97,6 +97,7 @@ class ObjectLocalizer:
                 try:
                     # 2. Transforma al frame `map`
                     transformed = self.tf_buffer.transform(point_stamped, "map", rospy.Duration(1.0))
+                    # da error si no está arrancado el nodo de navegación, como cabe esperar
 
                     # 3. Crea el marcador en el frame map
                     marker = create_marker(i, transformed.point.x, transformed.point.y, transformed.point.z,

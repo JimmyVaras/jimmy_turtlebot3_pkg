@@ -13,6 +13,8 @@ from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from ultralytics import YOLO
+from sensor_msgs.msg import CompressedImage
+
 
 
 class ObjectDetectionYOLO:
@@ -23,8 +25,10 @@ class ObjectDetectionYOLO:
             "/depth_camera/image_raw", Image, self.image_callback
         )
 
-        # Publisher for detected objects in JSON format
+        # Publisher for detected objects in JSON format and for images of detections
         self.detection_pub = rospy.Publisher("/yolo_detections", String, queue_size=10)
+        self.overlay_pub = rospy.Publisher("/yolo_detections/image/compressed", CompressedImage, queue_size=1)
+
 
         # Initialize variables
         self.bridge = CvBridge()
@@ -95,6 +99,17 @@ class ObjectDetectionYOLO:
         # Publish detections as a JSON string
         if detections:
             self.detection_pub.publish(json.dumps(detections))
+
+        # Encodes and publishes the image of the detections
+        try:
+            _, jpeg = cv2.imencode('.jpg', overlay_image, [int(cv2.IMWRITE_JPEG_QUALITY), 80])
+            msg = CompressedImage()
+            msg.header.stamp = rospy.Time.now()
+            msg.format = "jpeg"
+            msg.data = jpeg.tobytes()
+            self.overlay_pub.publish(msg)
+        except CvBridgeError as e:
+            rospy.logerr(f"Error encoding overlay image: {str(e)}")
 
         # Display the overlay image in a window
         cv2.imshow("YOLO Detections", overlay_image)

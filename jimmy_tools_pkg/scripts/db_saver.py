@@ -16,7 +16,8 @@ def callback(marker_array):
                 "x": marker.pose.position.x,
                 "y": marker.pose.position.y,
                 "z": 0
-            }
+            },
+            "robot_id": 1 # TODO: que dependa de un parametro de lanzamiento
         })
 
     try:
