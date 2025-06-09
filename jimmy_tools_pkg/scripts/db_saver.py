@@ -4,7 +4,7 @@ import rospy
 from visualization_msgs.msg import MarkerArray
 import requests
 
-FASTAPI_URL = "http://localhost:8000/detections"
+FASTAPI_URL = "http://localhost:8000/detections/temp"
 
 def callback(marker_array):
     markers_data = []
@@ -17,6 +17,7 @@ def callback(marker_array):
                 "y": marker.pose.position.y,
                 "z": 0
             },
+            "confidence": marker.color.r*100,
             "robot_id": 1 # TODO: que dependa de un parametro de lanzamiento
         })
 
@@ -28,6 +29,7 @@ def callback(marker_array):
 
 def listener():
     rospy.init_node('marker_listener_node', anonymous=True)
+    print("Working")
     rospy.Subscriber("/detected_objects_markers", MarkerArray, callback)
     rospy.spin()
 

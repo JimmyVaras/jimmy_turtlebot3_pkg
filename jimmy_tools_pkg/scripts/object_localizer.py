@@ -10,13 +10,14 @@ import json
 import rospy
 import sensor_msgs.point_cloud2 as pc2
 import tf2_ros
+import tf2_geometry_msgs
 from geometry_msgs.msg import PointStamped
 from sensor_msgs.msg import PointCloud2
 from std_msgs.msg import String
 from visualization_msgs.msg import Marker, MarkerArray
 
 
-def create_marker(marker_id, x, y, z, label):
+def create_marker(marker_id, x, y, z, label, conf):
     marker = Marker()
     marker.header.frame_id = "camera_rgb_optical_frame"
     marker.header.stamp = rospy.Time.now()
@@ -34,7 +35,7 @@ def create_marker(marker_id, x, y, z, label):
     marker.scale.z = 0.1
 
     marker.color.a = 1.0
-    marker.color.r = 1.0
+    marker.color.r = conf
     marker.color.g = 0.0
     marker.color.b = 0.0
 
@@ -96,12 +97,12 @@ class ObjectLocalizer:
 
                 try:
                     # 2. Transforma al frame `map`
-                    transformed = self.tf_buffer.transform(point_stamped, "map", rospy.Duration(1.0))
+                    transformed = self.tf_buffer.transform(point_stamped, "map", rospy.Duration(1))
                     # da error si no está arrancado el nodo de navegación, como cabe esperar
 
                     # 3. Crea el marcador en el frame map
                     marker = create_marker(i, transformed.point.x, transformed.point.y, transformed.point.z,
-                                           detection["label"])
+                                           detection["label"], detection["conf"])
                     marker.header.frame_id = "map"  # <-- ¡muy importante!
                     marker_array.markers.append(marker)
 

@@ -76,6 +76,7 @@ class ObjectDetectionYOLO:
                     detections.append(
                     {
                         "label": class_name,
+                        "conf": confidence,
                         "bbox_center_x": bbox_center_x,
                         "bbox_center_y": bbox_center_y,
                     }
