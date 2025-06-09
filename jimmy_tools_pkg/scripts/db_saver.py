@@ -29,7 +29,7 @@ def callback(marker_array):
 
 def listener():
     rospy.init_node('marker_listener_node', anonymous=True)
-    print("Working")
+    rospy.loginfo("Starting node database saver node...")
     rospy.Subscriber("/detected_objects_markers", MarkerArray, callback)
     rospy.spin()
 

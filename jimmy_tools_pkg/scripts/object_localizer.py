@@ -35,7 +35,7 @@ def create_marker(marker_id, x, y, z, label, conf):
     marker.scale.z = 0.1
 
     marker.color.a = 1.0
-    marker.color.r = conf
+    marker.color.r = round(conf, 2)
     marker.color.g = 0.0
     marker.color.b = 0.0
 
