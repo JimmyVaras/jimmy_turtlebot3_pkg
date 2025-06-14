@@ -26,9 +26,9 @@
   <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-urdf -model turtlebot3 -x $(arg x_pos) -y $(arg y_pos) -z $(arg z_pos) -param robot_description" />
   
   <!-- controller utils -->    
-    <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">
-       <param name="publish_frequency" type="double" value="100.0" />
-       <param name="prefix_tf_with" value="turtlebot3/" />
-    </node>
+  <!--  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" output="screen">-->
+  <!--     <param name="publish_frequency" type="double" value="100.0" />-->
+  <!--     <param name="prefix_tf_with" value="turtlebot3/" />-->
+  <!--  </node>-->
 
 </launch>
