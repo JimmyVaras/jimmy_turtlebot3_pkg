@@ -6,7 +6,7 @@
 # --------------------
 
 import json
-
+import unicodedata
 import cv2
 import rospy
 from cv_bridge import CvBridge, CvBridgeError
@@ -34,6 +34,82 @@ class ObjectDetectionYOLO:
         self.bridge = CvBridge()
         self.image = None
         self.model = YOLO("yolov8n.pt")
+
+        self.allowed_classes = {
+            "person", "bench", "cat", "dog", "backpack", "umbrella", "handbag", "tie",
+            "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite",
+            "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket",
+            "bottle", "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana",
+            "apple", "sandwich", "orange", "broccoli", "carrot", "hot dog", "pizza",
+            "donut", "cake", "chair", "couch", "potted plant", "bed", "dining table",
+            "toilet", "tv", "laptop", "mouse", "remote", "keyboard", "cell phone",
+            "microwave", "oven", "toaster", "sink", "refrigerator", "book", "clock",
+            "vase", "scissors", "teddy bear", "hair drier", "toothbrush"
+        }
+
+        self.class_name_translations = {
+            "person": "persona",
+            "bench": "banco",
+            "cat": "gato",
+            "dog": "perro",
+            "backpack": "mochila",
+            "umbrella": "paraguas",
+            "handbag": "bolso",
+            "tie": "corbata",
+            "suitcase": "maleta",
+            "frisbee": "frisbi",
+            "skis": "esquís",
+            "snowboard": "snowboard",
+            "sports ball": "pelota",
+            "kite": "cometa",
+            "baseball bat": "bate",
+            "baseball glove": "guante de béisbol",
+            "skateboard": "monopatín",
+            "surfboard": "tabla de surf",
+            "tennis racket": "raqueta de tenis",
+            "bottle": "botella",
+            "wine glass": "copa de vino",
+            "cup": "taza",
+            "fork": "tenedor",
+            "knife": "cuchillo",
+            "spoon": "cuchara",
+            "bowl": "bol",
+            "banana": "plátano",
+            "apple": "manzana",
+            "sandwich": "sándwich",
+            "orange": "naranja",
+            "broccoli": "brócoli",
+            "carrot": "zanahoria",
+            "hot dog": "perrito caliente",
+            "pizza": "pizza",
+            "donut": "donut",
+            "cake": "pastel",
+            "chair": "silla",
+            "couch": "sofá",
+            "potted plant": "planta",
+            "bed": "cama",
+            "dining table": "mesa",
+            "toilet": "inodoro",
+            "tv": "televisión",
+            "laptop": "portátil",
+            "mouse": "ratón",
+            "remote": "mando",
+            "keyboard": "teclado",
+            "cell phone": "móvil",
+            "microwave": "microondas",
+            "oven": "horno",
+            "toaster": "tostadora",
+            "sink": "fregadero",
+            "refrigerator": "frigorífico",
+            "book": "libro",
+            "clock": "reloj",
+            "vase": "jarrón",
+            "scissors": "tijeras",
+            "teddy bear": "oso de peluche",
+            "hair drier": "secador",
+            "toothbrush": "cepillo de dientes"
+        }
+
         rospy.loginfo("YOLO Object Detection Node Initialized")
 
     def image_callback(self, msg):
@@ -45,6 +121,12 @@ class ObjectDetectionYOLO:
             rospy.logerr(f"Error converting RGB image: {str(e)}")
 
     def detect_objects(self):
+        def remove_accents(text):
+            return ''.join(
+                c for c in unicodedata.normalize('NFD', text)
+                if unicodedata.category(c) != 'Mn'
+            )
+
         if self.image is None:
             return
 
@@ -66,16 +148,17 @@ class ObjectDetectionYOLO:
 
                 # Get the class name from the model's names attribute
                 class_name = self.model.names[class_id]
+                translated_name = self.class_name_translations.get(class_name, class_name)
 
                 # Compute the center of the bounding box
                 bbox_center_x = (x_min + x_max) // 2
                 bbox_center_y = (y_min + y_max) // 2
 
                 # Append the detection data in the required JSON format
-                if confidence > 0.4:
+                if confidence > 0.4 and class_name in self.allowed_classes:
                     detections.append(
                     {
-                        "label": class_name,
+                        "label": translated_name,
                         "conf": confidence,
                         "bbox_center_x": bbox_center_x,
                         "bbox_center_y": bbox_center_y,
@@ -86,7 +169,8 @@ class ObjectDetectionYOLO:
                 cv2.rectangle(
                     overlay_image, (x_min, y_min), (x_max, y_max), (0, 255, 0), 2
                 )
-                label = f"{class_name}: {confidence:.2f}"
+                label = f"{translated_name}: {confidence:.2f}"
+                label = remove_accents(label)
                 cv2.putText(
                     overlay_image,
                     label,
