@@ -8,6 +8,7 @@
 import json
 
 import rospy
+import math
 import sensor_msgs.point_cloud2 as pc2
 import tf2_ros
 import tf2_geometry_msgs
@@ -15,7 +16,10 @@ from geometry_msgs.msg import PointStamped
 from sensor_msgs.msg import PointCloud2
 from std_msgs.msg import String
 from visualization_msgs.msg import Marker, MarkerArray
+import requests
 
+#FASTAPI_URL = "http://localhost:8000/detections/temp"
+FASTAPI_URL = "https://ros-web-app-backend.onrender.com/detections/temp"
 
 def create_marker(marker_id, x, y, z, label, conf):
     marker = Marker()
@@ -45,6 +49,31 @@ def create_marker(marker_id, x, y, z, label, conf):
     marker.text = label
 
     return marker
+
+def save_to_db(marker, position_obj):
+    markers_data = []
+
+    markers_data.append({
+        "name": marker.text,
+        "position_obj": {
+            "x": position_obj.point.x,
+            "y": position_obj.point.y,
+            "z": 0
+        },
+        "position_nav": {
+            "x": marker.pose.position.x,
+            "y": marker.pose.position.y,
+            "z": 0
+        },
+        "confidence": marker.color.r*100,
+        "robot_id": 1 # TODO: que dependa de un parametro de lanzamiento
+    })
+
+    try:
+        requests.post(FASTAPI_URL, json={"markers": markers_data})
+        rospy.loginfo(f"Solicitud enviada al backend")
+    except requests.exceptions.RequestException as e:
+        rospy.logerr(f"Error al enviar al backend: {e}")
 
 
 class ObjectLocalizer:
@@ -87,24 +116,51 @@ class ObjectLocalizer:
             if point:
                 x, y, z = point
 
-                # 1. Crea un PointStamped en el frame de la cámara
+                point_stamped_obj = PointStamped()
+                point_stamped_obj.header.frame_id = "camera_rgb_optical_frame"
+                point_stamped_obj.header.stamp = rospy.Time.now()
+                point_stamped_obj.point.x = x
+                point_stamped_obj.point.y = y
+                point_stamped_obj.point.z = z
+
+                # Crea un PointStamped NAV en el frame de la cámara. Punto 0,5m antes del objeto
+                # desde la posición del robot. Para evitar colisión con el objeto al navegar
+
+                # Vector desde el origen de la cámara al punto detectado
+                dx, dy, dz = x, y, z
+                dist = math.sqrt(dx**2 + dy**2 + dz**2)
+
+                if dist < 0.6:
+                    rospy.logwarn("Object too close to adjust position safely.")
+                    continue
+
+                # Desplazamiento hacia atrás 1.0 metro
+                backoff_dist = 1.0
+                scale = (dist - backoff_dist) / dist
+                adj_x = dx * scale
+                adj_y = dy * scale
+                adj_z = dz * scale
+
+                # Nuevo punto ajustado
                 point_stamped = PointStamped()
                 point_stamped.header.frame_id = "camera_rgb_optical_frame"
                 point_stamped.header.stamp = rospy.Time.now()
-                point_stamped.point.x = x
-                point_stamped.point.y = y
-                point_stamped.point.z = z
+                point_stamped.point.x = adj_x
+                point_stamped.point.y = adj_y
+                point_stamped.point.z = adj_z
 
                 try:
-                    # 2. Transforma al frame `map`
+                    # Transforma al frame `map`
                     transformed = self.tf_buffer.transform(point_stamped, "map", rospy.Duration(1))
+                    transformed_obj = self.tf_buffer.transform(point_stamped_obj, "map", rospy.Duration(1))
                     # da error si no está arrancado el nodo de navegación, como cabe esperar
 
-                    # 3. Crea el marcador en el frame map
+                    # Crea el marcador en el frame map
                     marker = create_marker(i, transformed.point.x, transformed.point.y, transformed.point.z,
                                            detection["label"], detection["conf"])
                     marker.header.frame_id = "map"  # <-- ¡muy importante!
                     marker_array.markers.append(marker)
+                    save_to_db(marker, transformed_obj)
 
                 except (tf2_ros.LookupException, tf2_ros.ExtrapolationException) as e:
                     rospy.logwarn(f"TF transform failed: {e}")

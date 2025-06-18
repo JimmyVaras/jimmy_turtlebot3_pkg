@@ -9,8 +9,10 @@
         <arg name="map_file" value="$(find jimmy_simulations_pkg)/maps/turtlebot3_waffle_pi/map.yaml"/>
     </include>
 
-    <!-- Location Memory Node -->
-    <node pkg="jimmy_tools_pkg" type="db_saver.py" name="db_saver" output="screen">
-    </node>
+    <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch" />    
+
+    <!--&lt;!&ndash; Location Memory Node &ndash;&gt;-->
+    <!--<node pkg="jimmy_tools_pkg" type="db_saver.py" name="db_saver" output="screen">-->
+    <!--</node>-->
 
 </launch>

@@ -4,7 +4,9 @@ import rospy
 from visualization_msgs.msg import MarkerArray
 import requests
 
-FASTAPI_URL = "http://localhost:8000/detections/temp"
+# TODO: Switch desde launcher
+#FASTAPI_URL = "http://localhost:8000/detections/temp"
+FASTAPI_URL = "https://ros-web-app-backend.onrender.com/detections/temp"
 
 def callback(marker_array):
     markers_data = []
