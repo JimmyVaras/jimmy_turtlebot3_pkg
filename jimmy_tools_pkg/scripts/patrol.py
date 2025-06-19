@@ -21,15 +21,15 @@ def publish_pose(pub, pose_dict):
     msg.pose.orientation.y = pose_dict['orientation']['y']
     msg.pose.orientation.z = pose_dict['orientation']['z']
     msg.pose.orientation.w = pose_dict['orientation']['w']
+    time.sleep(5)
     pub.publish(msg)
-    time.sleep(1)
     rospy.loginfo(f"Sent pose to ({msg.pose.position.x:.2f}, {msg.pose.position.y:.2f})")
 
 def main():
     rospy.init_node('fixed_patrol_node')
     pub = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=10)
 
-    route_path = rospy.get_param("~route_path", "path/to/route.yml")  # puedes pasar como argumento
+    route_path = rospy.get_param("~route_path", "path/to/route.yml")  # pasar como argumento, TODO default
     loop = rospy.get_param("~loop", True)  # patrullar en bucle
 
     poses = load_route(route_path)
@@ -38,7 +38,7 @@ def main():
     while not rospy.is_shutdown():
         for pose_dict in poses:
             publish_pose(pub, pose_dict['pose'])
-            rospy.sleep(15)  # espera estimada a que llegue, ajustable
+            rospy.sleep(20)  # espera estimada entre puntos
 
         if not loop:
             break
