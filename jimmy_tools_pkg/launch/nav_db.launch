@@ -1,18 +1,13 @@
 <launch>
-
     <!-- This launch file launches the required nodes for navigating to saved locations from web app and save detections in the db  -->
 
     <!-- Include the turtlebot3_navigation.launch file -->
-    <!-- For some reason RViz wont display some topics correctly the first time you launch it, just restart it -->
     <include file="$(find turtlebot3_navigation)/launch/turtlebot3_navigation.launch">
         <!-- Pass the map_file parameter -->
         <arg name="map_file" value="$(find jimmy_simulations_pkg)/maps/turtlebot3_waffle_pi/map.yaml"/>
     </include>
 
+     <!--TODO: Comprobar si es necesario para /move-back -->
     <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch" />    
-
-    <!--&lt;!&ndash; Location Memory Node &ndash;&gt;-->
-    <!--<node pkg="jimmy_tools_pkg" type="db_saver.py" name="db_saver" output="screen">-->
-    <!--</node>-->
 
 </launch>

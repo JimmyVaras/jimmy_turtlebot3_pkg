@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="jimmy_tools_pkg" type="patrol.py" name="patrol" output="screen">
+        <param name="route_path" value="$(find jimmy_simulations_pkg)/routes/route.yaml"/>
+        <param name="loop" value="true"/>
+    </node>
+</launch>
