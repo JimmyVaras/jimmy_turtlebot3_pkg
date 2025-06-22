@@ -14,16 +14,14 @@ from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from ultralytics import YOLO
 from sensor_msgs.msg import CompressedImage
-
-
+from std_msgs.msg import Bool
 
 class ObjectDetectionYOLO:
     def __init__(self):
         rospy.init_node("object_detection_yolo", anonymous=True)
 
-        self.image_sub = rospy.Subscriber(
-            "/depth_camera/image_raw", Image, self.image_callback
-        )
+        self.image_sub = rospy.Subscriber("/depth_camera/image_raw", Image, self.image_callback)
+        rospy.Subscriber("/object_detection/enable", Bool, self.enable_callback)
 
         # Publisher for detected objects in JSON format and for images of detections
         self.detection_pub = rospy.Publisher("/yolo_detections", String, queue_size=10)
@@ -34,6 +32,7 @@ class ObjectDetectionYOLO:
         self.bridge = CvBridge()
         self.image = None
         self.model = YOLO("yolov8n.pt")
+        self.detection_enabled = False
 
         self.allowed_classes = {
             "person", "bench", "cat", "dog", "backpack", "umbrella", "handbag", "tie",
@@ -112,7 +111,15 @@ class ObjectDetectionYOLO:
 
         rospy.loginfo("YOLO Object Detection Node Initialized")
 
+    def enable_callback(self, msg):
+        self.detection_enabled = msg.data
+        estado = "ACTIVADA" if self.detection_enabled else "DESACTIVADA"
+        rospy.loginfo(f"[DETECCIÓN] {estado}")
+
     def image_callback(self, msg):
+        if not self.detection_enabled:
+            return  # Ignorar imágenes si está desactivado
+
         try:
             # Convert the ROS image to OpenCV format
             self.image = self.bridge.imgmsg_to_cv2(msg, desired_encoding="bgr8")

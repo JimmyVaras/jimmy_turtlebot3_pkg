@@ -16,10 +16,11 @@ from geometry_msgs.msg import PointStamped
 from sensor_msgs.msg import PointCloud2
 from std_msgs.msg import String
 from visualization_msgs.msg import Marker, MarkerArray
+from std_msgs.msg import Bool
 import requests
 
-#FASTAPI_URL = "http://localhost:8000/detections/temp"
-FASTAPI_URL = "https://ros-web-app-backend.onrender.com/detections/temp"
+FASTAPI_URL = "http://localhost:8000/detections/temp"
+#FASTAPI_URL = "https://ros-web-app-backend.onrender.com/detections/temp"
 
 def create_marker(marker_id, x, y, z, label, conf):
     marker = Marker()
@@ -83,11 +84,13 @@ class ObjectLocalizer:
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer)
 
+        self.detection_enabled = False
         self.pointcloud = None
 
         # Subscribers
         rospy.Subscriber("/camera/depth/points", PointCloud2, self.pointcloud_callback)
         rospy.Subscriber("/yolo_detections", String, self.detections_callback)
+        rospy.Subscriber("/object_detection/enable", Bool, self.enable_callback)
 
         # Publisher
         self.marker_pub = rospy.Publisher(
@@ -96,10 +99,18 @@ class ObjectLocalizer:
 
         rospy.spin()
 
+    def enable_callback(self, msg):
+        self.detection_enabled = msg.data
+        estado = "ACTIVADA" if self.detection_enabled else "DESACTIVADA"
+        rospy.loginfo(f"[LOCALIZACIÓN] {estado}")
+
     def pointcloud_callback(self, msg):
         self.pointcloud = msg
 
     def detections_callback(self, msg):
+        if not self.detection_enabled:
+            return  # Ignorar detecciones si está desactivado
+
         if self.pointcloud is None:
             rospy.logwarn("Waiting for point cloud data...")
             return
