@@ -7,7 +7,4 @@
         <arg name="map_file" value="$(find jimmy_simulations_pkg)/maps/turtlebot3_waffle_pi/map.yaml"/>
     </include>
 
-     <!--TODO: Comprobar si es necesario para /move-back -->
-    <include file="$(find turtlebot3_teleop)/launch/turtlebot3_teleop_key.launch" />    
-
 </launch>
