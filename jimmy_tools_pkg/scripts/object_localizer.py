@@ -19,8 +19,10 @@ from visualization_msgs.msg import Marker, MarkerArray
 from std_msgs.msg import Bool
 import requests
 
-FASTAPI_URL = "http://localhost:8000/detections/temp"
-#FASTAPI_URL = "https://ros-web-app-backend.onrender.com/detections/temp"
+FASTAPI_URL = "http://localhost:8000/detections"
+
+
+# FASTAPI_URL = "https://ros-web-app-backend.onrender.com/detections"
 
 def create_marker(marker_id, x, y, z, label, conf):
     marker = Marker()
@@ -51,6 +53,7 @@ def create_marker(marker_id, x, y, z, label, conf):
 
     return marker
 
+
 def save_to_db(marker, position_obj):
     markers_data = []
 
@@ -66,8 +69,8 @@ def save_to_db(marker, position_obj):
             "y": marker.pose.position.y,
             "z": 0
         },
-        "confidence": marker.color.r*100,
-        "robot_id": 1 # TODO: que dependa de un parametro de lanzamiento
+        "confidence": marker.color.r * 100,
+        "robot_id": 1  # TODO: que dependa de un parametro de lanzamiento
     })
 
     try:
@@ -139,7 +142,7 @@ class ObjectLocalizer:
 
                 # Vector desde el origen de la cámara al punto detectado
                 dx, dy, dz = x, y, z
-                dist = math.sqrt(dx**2 + dy**2 + dz**2)
+                dist = math.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
 
                 if dist < 0.6:
                     rospy.logwarn("Object too close to adjust position safely.")

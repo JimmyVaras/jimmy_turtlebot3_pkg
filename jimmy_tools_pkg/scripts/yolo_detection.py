@@ -16,6 +16,7 @@ from ultralytics import YOLO
 from sensor_msgs.msg import CompressedImage
 from std_msgs.msg import Bool
 
+
 class ObjectDetectionYOLO:
     def __init__(self):
         rospy.init_node("object_detection_yolo", anonymous=True)
@@ -26,7 +27,6 @@ class ObjectDetectionYOLO:
         # Publisher for detected objects in JSON format and for images of detections
         self.detection_pub = rospy.Publisher("/yolo_detections", String, queue_size=10)
         self.overlay_pub = rospy.Publisher("/yolo_detections/image/compressed", CompressedImage, queue_size=1)
-
 
         # Initialize variables
         self.bridge = CvBridge()
@@ -110,6 +110,7 @@ class ObjectDetectionYOLO:
         }
 
         rospy.loginfo("YOLO Object Detection Node Initialized")
+        rospy.loginfo(f"Detección activada: {self.detection_enabled}")
 
     def enable_callback(self, msg):
         self.detection_enabled = msg.data
@@ -164,13 +165,13 @@ class ObjectDetectionYOLO:
                 # Append the detection data in the required JSON format
                 if confidence > 0.4 and class_name in self.allowed_classes:
                     detections.append(
-                    {
-                        "label": translated_name,
-                        "conf": confidence,
-                        "bbox_center_x": bbox_center_x,
-                        "bbox_center_y": bbox_center_y,
-                    }
-                )
+                        {
+                            "label": translated_name,
+                            "conf": confidence,
+                            "bbox_center_x": bbox_center_x,
+                            "bbox_center_y": bbox_center_y,
+                        }
+                    )
 
                 # Draw the bounding box
                 cv2.rectangle(

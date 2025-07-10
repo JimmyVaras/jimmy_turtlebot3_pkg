@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>781</width>
-    <height>370</height>
+    <width>769</width>
+    <height>399</height>
    </rect>
   </property>
   <property name="font">
@@ -30,10 +30,10 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>761</width>
-      <height>301</height>
+      <x>20</x>
+      <y>20</y>
+      <width>731</width>
+      <height>331</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -49,7 +49,7 @@
         <x>40</x>
         <y>40</y>
         <width>661</width>
-        <height>181</height>
+        <height>241</height>
        </rect>
       </property>
       <property name="frameShape">
@@ -106,7 +106,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Launches the small_house simulation with TurtleBot3</string>
+        <string>Launches the small_house simulation with TurtleBot3.</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_6">
@@ -119,7 +119,7 @@
         </rect>
        </property>
        <property name="text">
-        <string>Launches the nodes for navigating to saved locations of detected objects</string>
+        <string>Launches the patrol node.</string>
        </property>
       </widget>
       <widget class="QPushButton" name="launchDetector">
@@ -148,20 +148,20 @@
         </rect>
        </property>
        <property name="text">
-        <string>Launches the navigation node to allow TB3 to localize itself in the map</string>
+        <string>Launches the navigation node.</string>
        </property>
       </widget>
       <widget class="QLabel" name="label_5">
        <property name="geometry">
         <rect>
-         <x>160</x>
+         <x>240</x>
          <y>110</y>
          <width>411</width>
          <height>31</height>
         </rect>
        </property>
        <property name="text">
-        <string>Launches the YOLO detection node</string>
+        <string>Launches the YOLO detection node.</string>
        </property>
       </widget>
       <widget class="QPushButton" name="launchLMG">
@@ -177,7 +177,7 @@
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
        <property name="text">
-        <string>Launch LMG</string>
+        <string>Launch Patrol</string>
        </property>
       </widget>
       <widget class="QPushButton" name="launchNavigator">
@@ -218,6 +218,77 @@
        </property>
        <property name="text">
         <string>Launchers</string>
+       </property>
+      </widget>
+      <widget class="QCheckBox" name="detectionSwitch">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>114</y>
+         <width>92</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>On/Off</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="startROSBridge">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>170</y>
+         <width>141</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>Start ROSBridge</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_9">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>170</y>
+         <width>501</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Starts ROSBridge.</string>
+       </property>
+      </widget>
+      <widget class="QPushButton" name="startTunnel">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>200</y>
+         <width>141</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="cursor">
+        <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="text">
+        <string>Start Tunnel</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_10">
+       <property name="geometry">
+        <rect>
+         <x>160</x>
+         <y>200</y>
+         <width>501</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Starts Azure DevTunnel &lt;ROS&gt;.</string>
        </property>
       </widget>
      </widget>
@@ -393,7 +464,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>781</width>
+     <width>769</width>
      <height>22</height>
     </rect>
    </property>

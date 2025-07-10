@@ -13,8 +13,11 @@ from geometry_msgs.msg import PoseStamped
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QComboBox, QCommandLinkButton, QCheckBox, \
     QVBoxLayout, QWidget
 from PyQt5 import uic
+from std_msgs.msg import Bool
+
 import commands
 from map_viewer import MapViewer
+
 
 class JimmyTurtlebot3GUI(QMainWindow):
     def __init__(self):
@@ -32,6 +35,9 @@ class JimmyTurtlebot3GUI(QMainWindow):
         self.launchNavigator = self.findChild(QPushButton, "launchNavigator")
         self.launchDetector = self.findChild(QPushButton, "launchDetector")
         self.launchLMG = self.findChild(QPushButton, "launchLMG")
+        self.startROSBridge = self.findChild(QPushButton, "startROSBridge")
+        self.startTunnel = self.findChild(QPushButton, "startTunnel")
+        self.detectionSwitch = self.findChild(QCheckBox, "detectionSwitch")
 
         # Load objects from JSON file and populate "selectorCB"
         self.selected_object = None
@@ -41,7 +47,8 @@ class JimmyTurtlebot3GUI(QMainWindow):
         # Initialize ROS Node & Publisher
         rospy.init_node("gui_node", anonymous=True)
         self.goal_pub = rospy.Publisher("/move_base_simple/goal", PoseStamped, queue_size=10)
-        rospy.loginfo("GUI Navigation Node Started")
+        self.detect_pub = rospy.Publisher('/object_detection/enable', Bool, queue_size=1)
+        rospy.loginfo("GUI Node Started")
 
         # Connect "Select" button click to show locations function
         self.selectButton.clicked.connect(self.show_locations)
@@ -57,9 +64,13 @@ class JimmyTurtlebot3GUI(QMainWindow):
         self.launchNavigator.clicked.connect(commands.start_navigator)
         self.launchDetector.clicked.connect(commands.start_detector)
         self.launchLMG.clicked.connect(commands.start_lmg)
+        self.startROSBridge.clicked.connect(commands.start_rosb)
+        self.startTunnel.clicked.connect(commands.start_tunnel)
+
+        self.detectionSwitch.stateChanged.connect(self.on_detectionSwitch_changed)
 
         # Crear el visor de mapas
-        self.map_viewer = MapViewer()
+        # self.map_viewer = MapViewer()
 
         # Encontrar el widget donde irá el mapa
         self.map_container = self.findChild(QWidget, "mapWidget")  # Nombre en Qt Designer
@@ -69,7 +80,6 @@ class JimmyTurtlebot3GUI(QMainWindow):
         # layout.addWidget(self.map_viewer)
 
         # DEJAMOS COMENTADO EL MAPA POR AHORA QUE NO SE VA A USAR NI DEPURAR
-
 
     def load_objects(self):
         """Load object names from JSON and populate the ComboBox."""
@@ -104,6 +114,20 @@ class JimmyTurtlebot3GUI(QMainWindow):
 
         self.goal_pub.publish(goal)
         rospy.loginfo(f"Navigating to {selected_location}")
+
+    def on_detectionSwitch_changed(self, state):
+        # Convertir el estado (int) a booleano (True/False)
+        is_enabled = state == 2  # 2 = Qt.Checked, 0 = Qt.Unchecked
+
+        # Publicar el mensaje ROS
+        self.publish_detection_status(is_enabled)
+
+    def publish_detection_status(self, is_enabled):
+        # Crear y publicar el mensaje Bool
+        msg = Bool()
+        msg.data = is_enabled
+        self.detect_pub.publish(msg)
+        rospy.loginfo(f"Publicado en /object_detection/enable: {is_enabled}")
 
 
 def start_roscore():
