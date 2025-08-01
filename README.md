@@ -14,6 +14,10 @@ Este paquete contiene el código desarrollado (del sistema ROS) para mi Trabajo 
 El objetivo es recorrer una vivienda, detectar objetos y ejecutar órdenes que provienen de la aplicación web (en este otro repositorio: https://github.com/JimmyVaras/ros-web-app). 
 Se utilizan técnicas de visión por computador, navegación autónoma y percepción 3D para permitir la detección contextual y la localización de objetos en el entorno.
 
+<p align="center">
+    <img height="400" alt="markers" src="https://github.com/user-attachments/assets/dd1a9b33-e5ed-4da8-b85c-fd28ac9be9bc" />
+</p>
+
 ## 3 Sub-paquetes:
 
 - **jimmy_gui_pkg**: Interfaz de usuario que sirve para arrancar los sistemas del robot desde su propio entorno local.
@@ -28,6 +32,10 @@ This repository contains the **ROS (Robot Operating System)** packages for a **T
 
 This software is part of a larger project and is designed to be controlled by a [remote control web application](#) (link to your other repository).
 
+<p align="center">
+  <img height="400" alt="arquitectura" src="https://github.com/user-attachments/assets/f657c265-66b0-451e-9db9-c8026114429c" />
+</p>
+
 ## 🤖 Main Features
 
 * **Realistic Simulation**: Simulated home environment in **Gazebo**, using the `aws-robomaker-small-house-world` map.
@@ -38,6 +46,10 @@ This software is part of a larger project and is designed to be controlled by a 
 * **Smart Patrolling**: The robot can autonomously follow a series of predefined waypoints, stopping to perform a 360° scan to enhance detection.
 * **Object-Based Navigation**: Can autonomously move to the location of a previously detected object.
 
+<p align="center">
+  <img height="500" alt="nodos" src="https://github.com/user-attachments/assets/fb7d7a26-5665-4f41-94f6-a3d4338aa196" />
+</p>
+
 ## 🛠️ Technologies Used
 
 * **ROS 1 Noetic Ninjemys**
@@ -47,6 +59,11 @@ This software is part of a larger project and is designed to be controlled by a 
 * **TurtleBot3**: robotic platform (Waffle Pi model).
 * **YOLOv8**: for object detection.
 * **OpenCV**: for image processing.
+
+<p align="center">
+  <img height="300" alt="detections" src="https://github.com/user-attachments/assets/a91e87e5-6bf3-497b-9e25-f604b9b9895e" />
+  <img height="400" alt="mapa-detecciones" src="https://github.com/user-attachments/assets/724b1d9f-4057-491b-a1a3-7b6fc081fbba" />
+</p>
 
 ## 🚀 Getting Started
 
